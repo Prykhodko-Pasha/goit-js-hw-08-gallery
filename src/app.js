@@ -68,9 +68,11 @@ const refs = {
   gallery: document.querySelector(".gallery"),
   lightbox: document.querySelector(".lightbox"),
   lightbox__image: document.querySelector(".lightbox__image"),
+  overlay: document.querySelector(".lightbox__overlay"),
   closeBtn: document.querySelector('[data-action="close-lightbox"]'),
 };
-// console.log(refs.gallery);
+
+let IMG_IDX = 0; // будущий индекс полноэкранного изображения
 
 // ========== Создание и рендер разметки ==========
 const galleryMarkup = galleryItems
@@ -85,24 +87,62 @@ refs.gallery.innerHTML = galleryMarkup;
 // ================================================
 
 // =========== Открытие модального окна ===========
-const onOpenModal = (e) => {
+refs.gallery.addEventListener("click", onOpenModal);
+
+function onOpenModal(e) {
   e.preventDefault();
   refs.lightbox.classList.add("is-open");
   refs.lightbox__image.src = e.target.dataset.source;
   refs.lightbox__image.alt = e.target.alt;
-};
 
-// ====== Реализация делегирования на галерее ======
-refs.gallery.addEventListener("click", onOpenModal);
+  IMG_IDX = [...document.querySelectorAll(".gallery__image")].indexOf(e.target);
+  // console.log(IMG_IDX);
+  window.addEventListener("keydown", (e, IMG_IDX) =>
+    onKeyPressModal(e, IMG_IDX)
+  );
+}
 // ================================================
 
 // =========== Закрытие модального окна ===========
-const onCloseModal = (e) => {
-  // e.preventDefault();
+refs.closeBtn.addEventListener("click", onCloseModal);
+refs.overlay.addEventListener("click", (event) => {
+  if (event.currentTarget !== event.target) {
+    return;
+  }
+  onCloseModal();
+});
+
+function onCloseModal() {
   refs.lightbox.classList.remove("is-open");
   refs.lightbox__image.src = "";
   refs.lightbox__image.alt = "";
-};
+  window.removeEventListener("keydown", onKeyPressModal);
+}
 
-// ====== Реализация делегирования на галерее ======
-refs.closeBtn.addEventListener("click", onCloseModal);
+function onKeyPressModal(e, idx) {
+  // console.log(e.code);
+  switch (e.code) {
+    case "Escape":
+      onCloseModal();
+      break;
+    case "ArrowRight":
+      IMG_IDX += 1;
+      if (IMG_IDX === galleryItems.length) {
+        // если дошли до конца галлереи
+        IMG_IDX = 0; // переходим на начало
+      }
+      refs.lightbox__image.src = galleryItems[IMG_IDX].original;
+      refs.lightbox__image.alt = galleryItems[IMG_IDX].description;
+      break;
+    case "ArrowLeft":
+      IMG_IDX -= 1;
+      if (IMG_IDX < 0) {
+        // если дошли до начала галлереи
+        IMG_IDX = galleryItems.length - 1; // переходим в конец
+      }
+      refs.lightbox__image.src = galleryItems[IMG_IDX].original;
+      refs.lightbox__image.alt = galleryItems[IMG_IDX].description;
+      break;
+  }
+}
+// ================================================
