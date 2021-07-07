@@ -97,9 +97,7 @@ function onOpenModal(e) {
 
   IMG_IDX = [...document.querySelectorAll(".gallery__image")].indexOf(e.target);
   // console.log(IMG_IDX);
-  window.addEventListener("keydown", (e, IMG_IDX) =>
-    onKeyPressModal(e, IMG_IDX)
-  );
+  window.addEventListener("keydown", onKeyPressModal);
 }
 // ================================================
 
@@ -116,10 +114,12 @@ function onCloseModal() {
   refs.lightbox.classList.remove("is-open");
   refs.lightbox__image.src = "";
   refs.lightbox__image.alt = "";
+
   window.removeEventListener("keydown", onKeyPressModal);
+  IMG_IDX = 0;
 }
 
-function onKeyPressModal(e, idx) {
+function onKeyPressModal(e) {
   // console.log(e.code);
   switch (e.code) {
     case "Escape":
