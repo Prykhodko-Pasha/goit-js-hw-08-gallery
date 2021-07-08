@@ -87,15 +87,20 @@ refs.gallery.innerHTML = galleryMarkup;
 // ================================================
 
 // =========== Открытие модального окна ===========
+const imgArr = [...document.querySelectorAll(".gallery__image")];
+
 refs.gallery.addEventListener("click", onOpenModal);
 
 function onOpenModal(e) {
+  if (e.currentTarget === e.target) {
+    return;
+  }
   e.preventDefault();
   refs.lightbox.classList.add("is-open");
   refs.lightbox__image.src = e.target.dataset.source;
   refs.lightbox__image.alt = e.target.alt;
 
-  IMG_IDX = [...document.querySelectorAll(".gallery__image")].indexOf(e.target);
+  IMG_IDX = imgArr.indexOf(e.target);
   // console.log(IMG_IDX);
   window.addEventListener("keydown", onKeyPressModal);
 }
@@ -103,12 +108,7 @@ function onOpenModal(e) {
 
 // =========== Закрытие модального окна ===========
 refs.closeBtn.addEventListener("click", onCloseModal);
-refs.overlay.addEventListener("click", (event) => {
-  if (event.currentTarget !== event.target) {
-    return;
-  }
-  onCloseModal();
-});
+refs.overlay.addEventListener("click", onCloseModal);
 
 function onCloseModal() {
   refs.lightbox.classList.remove("is-open");
