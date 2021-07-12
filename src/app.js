@@ -92,10 +92,11 @@ const imgArr = [...document.querySelectorAll(".gallery__image")];
 refs.gallery.addEventListener("click", onOpenModal);
 
 function onOpenModal(e) {
-  if (e.currentTarget === e.target) {
+  e.preventDefault();
+  if (!e.target.classList.contains("gallery__image")) {
     return;
   }
-  e.preventDefault();
+  // console.log(e.target);
   refs.lightbox.classList.add("is-open");
   refs.lightbox__image.src = e.target.dataset.source;
   refs.lightbox__image.alt = e.target.alt;
